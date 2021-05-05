@@ -107,39 +107,51 @@ echo ""
 
 printRepos
 
-echo ""
-echo "What would you like to do?"
-echo "(1)......... Pull All Repos"
-echo "(2)......... Change Branch for All Repos"
-echo "(999)....... Force Clean Repos"
-echo "(Blank)..... Quit"
+while : ; do
 
-read -p "Choice: " choice
+    echo ""
+    echo "What would you like to do?"
+    echo "(1)......... Pull All Repos"
+    echo "(2)......... Change Branch for All Repos"
+    echo "(999)....... Force Clean Repos. Removes ALL changes from last commit."
+    echo "(Blank)..... Quit"
 
-if [[ $choice -eq "1" ]]
-then
-    pullRepos
-    echo ""
-    echo "Final Results"
-    echo ""
-    printRepos
-elif [[ $choice -eq "2" ]]
-then
-    echo "Enter the branch name to checkout"
-    read branchname
-    changeBranch $branchname
-    echo ""
-    echo "Final Results"
-    echo ""
-    printRepos
-elif [[ $choice -eq "999" ]]
-then
-    echo "Cleaning Repos"
-    cleanRepos
-    echo ""
-    echo "Final Results"
-    echo ""
-    printRepos
-fi
+    read -p "Choice: " choice
+
+    if [[ $choice -eq "1" ]]
+    then
+        pullRepos
+        echo ""
+        echo "Final Results"
+        echo ""
+        printRepos
+    elif [[ $choice -eq "2" ]]
+    then
+        echo "Enter the branch name to checkout"
+        read branchname
+        changeBranch $branchname
+        echo ""
+        echo "Final Results"
+        echo ""
+        printRepos
+    elif [[ $choice -eq "999" ]]
+    then
+        echo "Cleaning Repos"
+        echo "This will destroy ANY unsaved work in ALL repos."
+        read -p "Continue? (Y/N): " cleancontinue
+        if [ $cleancontinue == "Y" ] | [ $cleancontinue == "y" ]
+        then 
+            cleanRepos
+            echo ""
+            echo "Final Results"
+            echo ""
+            printRepos
+        else
+            echo "Clean aborted!"
+        fi
+    else
+        break;
+    fi
+done
 
 echo "Complete!"
