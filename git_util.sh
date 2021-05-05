@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# This utility helps keep track of my repositories for idlekit. 
+# This utility helps keep track of repositories for idlekit. 
 
 function printRepos() {
     CUR_DIR=$(pwd)
@@ -76,15 +76,45 @@ function changeBranch() {
     done
 }
 
+function cleanRepos() {
+
+    #save pwd to restore at the end of each loop
+    CUR_DIR=$(pwd)
+    echo ""
+    echo "Attempting to clean all repos..."
+    echo ""
+    # Pull each branch
+    for i in $(find . -name ".git" | cut -c 3-); do
+        echo "---------------------------------------------"
+        # Go up to parent folder to run git commands
+        cd "$i";
+        cd ..;
+
+        repo=$(basename $(pwd));
+        currrentbranch=$(basename $(git symbolic-ref HEAD 2>/dev/null))
+        printf "%-30s %-30s\n" $repo $currrentbranch
+        echo ""
+        
+        git clean -dxf
+        git reset --hard
+        git checkout -- .
+        # must reset back to start directory
+        cd $CUR_DIR;
+    done
+}
+
+echo ""
+
 printRepos
 
 echo ""
 echo "What would you like to do?"
-echo "1. Pull"
-echo "2. Change Branch"
-echo "Press enter to quit"
+echo "(1)......... Pull All Repos"
+echo "(2)......... Change Branch for All Repos"
+echo "(999)....... Force Clean Repos"
+echo "(Blank)..... Quit"
 
-read choice
+read -p "Choice: " choice
 
 if [[ $choice -eq "1" ]]
 then
@@ -98,6 +128,14 @@ then
     echo "Enter the branch name to checkout"
     read branchname
     changeBranch $branchname
+    echo ""
+    echo "Final Results"
+    echo ""
+    printRepos
+elif [[ $choice -eq "999" ]]
+then
+    echo "Cleaning Repos"
+    cleanRepos
     echo ""
     echo "Final Results"
     echo ""
